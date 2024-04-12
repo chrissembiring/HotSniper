@@ -64,6 +64,7 @@ RUN apt-get update && apt-get install -y \
     libxmu-dev \
     libxi-dev \
     gnuplot \
+    bear \
  && rm -rf /var/lib/apt/lists/*
  # Python3,pip3 and modules for simulationcontrol
 RUN apt-get update && apt-get install -y \
