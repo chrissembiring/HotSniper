@@ -74,3 +74,6 @@ pin.tar.gz
 
 # compile files
 *compile_commands.json
+
+#clang
+.cache

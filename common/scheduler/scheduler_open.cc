@@ -310,7 +310,7 @@ void SchedulerOpen::initDVFSPolicy(String policyName) {
 	} else if (policyName == "ondemand") {
 		float upThreshold = Sim()->getCfg()->getFloat("scheduler/open/dvfs/ondemand/up_threshold");
 		float downThreshold = Sim()->getCfg()->getFloat("scheduler/open/dvfs/ondemand/down_threshold");
-		float dtmCriticalTemperature = Sim()->getCfg()->getFloat("scheduler/open/dvfs/ondemand/dtm_cricital_temperature");
+		float dtmCriticalTemperature = Sim()->getCfg()->getFloat("scheduler/open/dvfs/ondemand/dtm_critical_temperature");
 		float dtmRecoveredTemperature = Sim()->getCfg()->getFloat("scheduler/open/dvfs/ondemand/dtm_recovered_temperature");
 		dvfsPolicy = new DVFSOndemand(performanceCounters,
 										coreRows,
