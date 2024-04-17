@@ -71,3 +71,6 @@ frontend
 sift
 xed
 pin.tar.gz
+
+# compile files
+*compile_commands.json
