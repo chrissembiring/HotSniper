@@ -98,7 +98,7 @@ bool DVFSOndemand::throttle() {
   return in_throttle_mode;
 }
 
-DVFSOndemandAssymetric::DVFSOndemandAssymetric(
+DVFSOndemandAssymmetric::DVFSOndemandAssymmetric(
     const PerformanceCounters *performanceCounters, int coreRows,
     int coreColumns, int minFrequency, int maxFrequency, int frequencyStepSize,
     float upThreshold, float downThreshold, float dtmCriticalTemperature,
@@ -111,7 +111,7 @@ DVFSOndemandAssymetric::DVFSOndemandAssymetric(
       dtmRecoveredTemperature(dtmRecoveredTemperature) {}
 
 std::vector<int>
-DVFSOndemandAssymetric::getFrequencies(const std::vector<int> &oldFrequencies,
+DVFSOndemandAssymmetric::getFrequencies(const std::vector<int> &oldFrequencies,
                                        const std::vector<bool> &activeCores) {
 
   std::vector<int> frequencies(coreRows * coreColumns);
@@ -177,7 +177,7 @@ DVFSOndemandAssymetric::getFrequencies(const std::vector<int> &oldFrequencies,
   return frequencies;
 }
 
-bool DVFSOndemandAssymetric::throttle(int coreID) {
+bool DVFSOndemandAssymmetric::throttle(int coreID) {
   if (performanceCounters->getTemperatureOfCore(coreID) >
       dtmCriticalTemperature) {
     if (!in_throttle_mode) {

@@ -302,6 +302,8 @@ void SchedulerOpen::initDVFSPolicy(String policyName) {
 		dvfsPolicy = NULL;
 	} else if (policyName == "maxFreq") {
 		dvfsPolicy = new DVFSMaxFreq(performanceCounters, coreRows, coreColumns, maxFrequency);
+	} else if (policyName == "minMaxFreq") {
+		dvfsPolicy = new DVFSMinMaxFreq(performanceCounters, coreRows, coreColumns, maxFrequency, minFrequency);
 	} else if (policyName == "testStaticPower") {
 		dvfsPolicy = new DVFSTestStaticPower(performanceCounters, coreRows, coreColumns, minFrequency, maxFrequency);
 	} else if (policyName == "fixedPower") {

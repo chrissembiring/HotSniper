@@ -40,9 +40,9 @@ private:
   bool throttle();
 };
 
-class DVFSOndemandAssymetric : public DVFSPolicy {
+class DVFSOndemandAssymmetric : public DVFSPolicy {
 public:
-  DVFSOndemandAssymetric(const PerformanceCounters *performanceCounters,
+  DVFSOndemandAssymmetric(const PerformanceCounters *performanceCounters,
                          int coreRows, int coreColumns, int minFrequency,
                          int maxFrequency, int frequencyStepSize,
                          float upThreshold, float downThreshold,

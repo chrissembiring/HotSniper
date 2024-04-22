@@ -20,4 +20,18 @@ private:
     int maxFrequency;
 };
 
+class DVFSMinMaxFreq : public DVFSPolicy {
+public:
+    DVFSMinMaxFreq(const PerformanceCounters *performanceCounters, int coreRows, int coreColumns, int maxFrequency, int minFrequency);
+    virtual std::vector<int> getFrequencies(const std::vector<int> &oldFrequencies, const std::vector<bool> &activeCores);
+
+private:
+    const PerformanceCounters *performanceCounters;
+    unsigned int coreRows;
+    unsigned int coreColumns;
+    int maxFrequency;
+    int minFrequency;
+};
+
+
 #endif
