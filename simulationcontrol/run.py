@@ -111,7 +111,7 @@ def run(base_configuration, benchmark, ignore_error=False):
     if 'mediumDVFS' in base_configuration:
         periodicPower = 250000
     if 'fastDVFS' in base_configuration:
-        periodicPower = 100000    
+        periodicPower = 100000
     args = '-n {number_cores} -c {config} --benchmarks={benchmark} --no-roi --sim-end=last -senergystats:{periodic} -speriodic-power:{periodic}{script}{benchmark_options}' \
         .format(number_cores=NUMBER_CORES,
                 config=SNIPER_CONFIG,
@@ -189,7 +189,7 @@ def get_instance(benchmark, parallelism, input_set='small'):
         'splash2-water.nsq': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
         'splash2-water.sp': [1, 2, 0, 4, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 16],  # other parallelism values run but are suboptimal -> don't allow in the first place
     }
-    
+
     ps = threads[benchmark]
     if parallelism <= 0 or parallelism not in ps:
         raise Infeasible()
@@ -292,21 +292,65 @@ def multi_program():
         else:
             benchmarks = benchmarks + get_instance(benchmark, min_parallelism, input_set)
 
-    run(base_configuration, benchmarks)
+    # run(base_configuration, benchmarks)
+    run(['1.0GHz', 'maxFreq', 'slowDVFS'], 'splash2-fft-small-1,splash2-fft-small-1')
 
-    
+
 def test_static_power():
     run(['4.0GHz', 'testStaticPower', 'slowDVFS'], get_instance('parsec-blackscholes', 3, input_set='simsmall'))
 
 def ondemand_demo():
     run(['{:.1f}GHz'.format(4), 'ondemand', 'fastDVFS'], get_instance('parsec-blackscholes', 3, input_set='simsmall'))
 
+def multi_program_exps():
+    input_set = 'simsmall'
+    # base_configurations = [['1.0GHz', 'maxFreq', 'slowDVFS'], ['2.0GHz', 'maxFreq', 'slowDVFS'], ['3.0GHz', 'maxFreq', 'slowDVFS'], ['4.0GHz', 'maxFreq', 'slowDVFS']]
+                        #    ['1.0GHz', 'maxFreq', 'coldestCore', 'slowDVFS'], ['2.0GHz', 'maxFreq', 'coldestCore', 'slowDVFS'],
+                        #    ['3.0GHz', 'maxFreq', 'coldestCore', 'slowDVFS'], ['4.0GHz', 'maxFreq', 'coldestCore', 'slowDVFS']]
+    base_configurations = [['3.0GHz', 'maxFreq', 'slowDVFS']]
+    benchmark_set = (
+        'parsec-swaptions',
+        # 'parsec-x264',
+        # 'parsec-fluidanimate',
+        # 'parsec-streamcluster',
+        # 'parsec-blackscholes',
+        # 'parsec-bodytrack',
+        # 'parsec-dedup'
+    )
+
+    for benchmark in benchmark_set:
+        benchmarks = ''
+        min_parallelism = get_feasible_parallelisms(benchmark)[0]
+        benchmarks = benchmarks + get_instance(benchmark, min_parallelism, input_set)
+        # Run for 1
+        for config in base_configurations:
+            run(config, benchmarks)
+
+        if min_parallelism < 3:
+            benchmarks = benchmarks + ',' + get_instance(benchmark, min_parallelism, input_set)
+            # Run for 2
+            for config in base_configurations:
+                run(config, benchmarks)
+
+        if min_parallelism == 1:
+            benchmarks = benchmarks + ',' + get_instance(benchmark, min_parallelism, input_set)
+            # Run for 3
+            for config in base_configurations:
+                run(config, benchmarks)
+
+            benchmarks = benchmarks + ',' + get_instance(benchmark, min_parallelism, input_set)
+            # Run for 4
+            for config in base_configurations:
+                run(config, benchmarks)
+
+
 
 def main():
     # example()
-    ondemand_demo()
-    #test_static_power()
+    # ondemand_demo()
+    # test_static_power()
     # multi_program()
+    multi_program_exps()
 
 if __name__ == '__main__':
     main()
