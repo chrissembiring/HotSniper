@@ -33,7 +33,7 @@ double PELT::get_utilisation(int coreCounter){
         for (unsigned long i = 1; i < core_util_dq->size(); i++){
                 util += tmp_y * (*core_util_dq)[i];
                 divisor += tmp_y;
-                tmp_y = tmp_y * tmp_y;
+                tmp_y = tmp_y * y;
         }
 
         divisor = divisor * 1100; // taking 1100 instead of 1024 because periodic is called every 100ns
