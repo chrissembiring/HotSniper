@@ -7,6 +7,7 @@
 #ifndef __SCHEDULER_OPEN_H
 #define __SCHEDULER_OPEN_H
 
+#include "pelt.h"
 #include "scheduler_pinned_base.h"
 #include "thermalModel.h"
 #include "performance_counters.h"
@@ -31,6 +32,7 @@ class SchedulerOpen : public SchedulerPinnedBase {
 		int coreRows;
 		int coreColumns;
 
+        PELT * pelt;
 		PerformanceCounters *performanceCounters;
 		MappingPolicy *mappingPolicy = NULL;
 		long mappingEpoch;
@@ -42,7 +44,7 @@ class SchedulerOpen : public SchedulerPinnedBase {
 
 		DVFSPolicy *dvfsPolicy = NULL;
 		long dvfsEpoch;
-		void initDVFSPolicy(String policyName);
+		void initDVFSPolicy(String policyName, PELT *pelt);
 		void executeDVFSPolicy();
 		const int maxDVFSPatience = 0;
 		std::vector<int> downscalingPatience; // can be used by the DVFS control loop to delay DVFS downscaling for very little violations
