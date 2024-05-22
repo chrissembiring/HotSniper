@@ -33,7 +33,7 @@ double PELT::get_utilisation(int coreCounter){
         int prevMappedCore = this->prev_core_mapping[coreCounter];
 
         double tmp_y = y;
-        std::deque<double> * core_util_dq = core_utils[coreCounter];
+        std::deque<double> * core_util_dq = core_utils[prevMappedCore];
         
         util = (*core_util_dq)[0];
         for (unsigned long i = 1; i < core_util_dq->size(); i++){
