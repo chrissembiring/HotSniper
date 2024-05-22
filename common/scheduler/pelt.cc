@@ -3,8 +3,11 @@
 PELT::PELT(int coreCount, int dvfsEpoch){
         this->coreCount = coreCount;
         this->n = dvfsEpoch/1100;
-        for (int i = 0; i < coreCount; i++) 
+        for (int i = 0; i < coreCount; i++){ 
                 core_utils.push_back(new std::deque<double>()); 
+                this->prev_core_mapping.push_back(i);
+                this->addFreq.push_back(0); // set additional frequency as 0
+        }
 };
 
 PELT::~PELT(){
@@ -25,6 +28,9 @@ void PELT::append(int coreCounter, double interval_util){
 double PELT::get_utilisation(int coreCounter){
         double util = 0;
         double divisor = 1;
+
+        // make use of history of previous mapped core
+        int prevMappedCore = this->prev_core_mapping[coreCounter];
 
         double tmp_y = y;
         std::deque<double> * core_util_dq = core_utils[coreCounter];
