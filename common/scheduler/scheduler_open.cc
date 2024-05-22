@@ -333,10 +333,7 @@ void SchedulerOpen::initMappingPolicy(String policyName) {
         "scheduler/open/migration/coldestCore/criticalTemperature");
     mappingPolicy = new ColdestCore(performanceCounters, coreRows, coreColumns,
                                     criticalTemperature);
-  } // else if (policyName ="XYZ") {... } //Place to instantiate a new mapping
-    // logic. Implementation is put in "policies" package.
-
-  else {
+  } else {
     cout << "\n[Scheduler] [Error]: Unknown Mapping Algorithm" << endl;
     exit(1);
   }
@@ -411,9 +408,13 @@ void SchedulerOpen::initMigrationPolicy(String policyName) {
         "scheduler/open/migration/coldestCore/criticalTemperature");
     migrationPolicy = new ColdestCore(performanceCounters, coreRows,
                                       coreColumns, criticalTemperature);
-  } // else if (policyName ="XYZ") {... } //Place to instantiate a new migration
-    // logic. Implementation is put in "policies" package.
-  else {
+  } else if (policyName == "schedColdestCore") {
+    cout << "migration policy set to schedColdestCore" << endl;
+    float criticalTemperature = Sim()->getCfg()->getFloat(
+        "scheduler/open/migration/coldestCore/criticalTemperature");
+    mappingPolicy = new ColdestCore(performanceCounters, coreRows, coreColumns,
+                                    criticalTemperature - 2.5);
+  } else {
     cout << "\n[Scheduler] [Error]: Unknown Migration Algorithm" << endl;
     exit(1);
   }
