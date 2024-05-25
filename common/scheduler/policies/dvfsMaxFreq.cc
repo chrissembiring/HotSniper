@@ -135,7 +135,7 @@ DVFSchedFreq::getFrequencies(const std::vector<int> &oldFrequencies,
 }
 
 void DVFSchedFreq::addFrequency(int coreCounter){
-        float thresholdTemperature = this->dtmCriticalTemperature - 5;
+        float thresholdTemperature = this->dtmCriticalTemperature - 2.5;
         int previousCore = pelt->prev_core_mapping[coreCounter];
 
         if (performanceCounters->getTemperatureOfCore(previousCore) > thresholdTemperature)

@@ -354,7 +354,7 @@ void SchedulerOpen::initDVFSPolicy(String policyName, PELT *pelt) {
     cout << "max frequency" << maxFrequency << endl;
     dvfsPolicy = new DVFSMinMaxFreq(performanceCounters, coreRows, coreColumns,
                                     maxFrequency, minFrequency);
-  } else if (policyName == "schedFreq") {
+  } else if (policyName == "schedFreqHS") {
     cout << "sched-util governor called!";
     float dtmCriticalTemperature = Sim()->getCfg()->getFloat(
         "scheduler/open/dvfs/ondemand/dtm_critical_temperature");
@@ -408,12 +408,6 @@ void SchedulerOpen::initMigrationPolicy(String policyName) {
         "scheduler/open/migration/coldestCore/criticalTemperature");
     migrationPolicy = new ColdestCore(performanceCounters, coreRows,
                                       coreColumns, criticalTemperature);
-  } else if (policyName == "schedColdestCore") {
-    cout << "migration policy set to schedColdestCore" << endl;
-    float criticalTemperature = Sim()->getCfg()->getFloat(
-        "scheduler/open/migration/coldestCore/criticalTemperature");
-    mappingPolicy = new ColdestCore(performanceCounters, coreRows, coreColumns,
-                                    criticalTemperature - 2.5);
   } else {
     cout << "\n[Scheduler] [Error]: Unknown Migration Algorithm" << endl;
     exit(1);
