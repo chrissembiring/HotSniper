@@ -142,6 +142,9 @@ void DVFSchedFreq::addFrequency(int coreCounter){
                 pelt->addFreq[coreCounter] -= 40;
         else
                 pelt->addFreq[coreCounter] += 20;
+
+        if (performanceCounters->getUtilizationOfCore(previousCore) == 0.0)
+                pelt->addFreq[coreCounter] = 0;
 }
 
 bool DVFSchedFreq::throttle() {
