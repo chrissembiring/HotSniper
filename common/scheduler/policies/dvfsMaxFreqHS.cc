@@ -24,7 +24,7 @@ DVFSMaxFreqHS::getFrequencies(const std::vector<int> &oldFrequencies,
       float utilization =
           performanceCounters->getUtilizationOfCore(coreCounter);
 
-      cout << "[Scheduler][DVFS_MAX_FREQ_HS]: Core " << setw(2) << coreCounter
+      cout << "[Scheduler][DVFS_MAX_FREQ]: Core " << setw(2) << coreCounter
            << ":";
       cout << " P=" << fixed << setprecision(3) << power << " W";
       cout << " f=" << frequency << " MHz";
@@ -60,7 +60,7 @@ DVFSMinMaxFreqHS::getFrequencies(const std::vector<int> &oldFrequencies,
       float utilization =
           performanceCounters->getUtilizationOfCore(coreCounter);
 
-      cout << "[Scheduler][DVFS_MINMAX_FREQ_HS]: Core " << setw(2) << coreCounter
+      cout << "[Scheduler][DVFS_MINMAX_FREQ]: Core " << setw(2) << coreCounter
            << ":";
       cout << " P=" << fixed << setprecision(3) << power << " W";
       cout << " f=" << frequency << " MHz";
@@ -99,6 +99,10 @@ DVFSchedFreqHS::getFrequencies(const std::vector<int> &oldFrequencies,
                              const std::vector<bool> &activeCores) {
   std::vector<int> frequencies(coreRows * coreColumns);
 
+  // perform add Frequency operation
+  for (unsigned int coreC = 0; coreC < coreRows * coreColumns; coreC++)
+          addFrequency(coreC);
+  
   for (unsigned int coreCounter = 0; coreCounter < coreRows * coreColumns;
        coreCounter++) {
 
@@ -111,7 +115,7 @@ DVFSchedFreqHS::getFrequencies(const std::vector<int> &oldFrequencies,
       float utilization =
           performanceCounters->getUtilizationOfCore(coreCounter);
 
-      cout << "[Scheduler][DVFS_Sched_FREQ_HS]: Core " << setw(2) << coreCounter
+      cout << "[Scheduler][DVFS_Sched_FREQ]: Core " << setw(2) << coreCounter
            << ":";
       cout << " P=" << fixed << setprecision(3) << power << " W";
       cout << " f=" << frequency << " MHz";
@@ -119,21 +123,32 @@ DVFSchedFreqHS::getFrequencies(const std::vector<int> &oldFrequencies,
       cout << " utilization=" << fixed << setprecision(3) << utilization;
 
       double util = pelt->get_utilisation(coreCounter);
-      double new_freq = pelt->get_frequency(util, maxFrequency);
-      
+      double new_freq = pelt->get_frequency(util, maxFrequency) + pelt->addFreq[coreCounter];
+
       // adjust frequency based on current temperature
-      if (tlt){
+      if (tlt) {
         cout << endl;
         frequencies.at(coreCounter) = minFrequency;
-      }else{
-        cout << " new freq=" << (int) new_freq << endl;
-        frequencies.at(coreCounter) = (int) new_freq;
+        pelt->addFreq[coreCounter] = 0;
+      } else {
+        cout << " new freq=" << (int)new_freq << endl;
+        frequencies.at(coreCounter) = (int)new_freq;
       }
     } else {
       frequencies.at(coreCounter) = minFrequency;
     }
   }
   return frequencies;
+}
+
+void DVFSchedFreqHS::addFrequency(int coreCounter){
+        float thresholdTemperature = this->dtmCriticalTemperature - 5;
+        int previousCore = pelt->prev_core_mapping[coreCounter];
+
+        if (performanceCounters->getTemperatureOfCore(previousCore) > thresholdTemperature)
+                pelt->addFreq[coreCounter] -= 40;
+        else
+                pelt->addFreq[coreCounter] += 20;
 }
 
 bool DVFSchedFreqHS::throttle() {

@@ -8,7 +8,7 @@
 #include <vector>
 #include "dvfspolicy.h"
 #include "pelt.h"
-#include "temperature.h"
+#include "../../../hotspot/temperature.h"
 
 class DVFSMaxFreqHS : public DVFSPolicy {
 public:
@@ -53,6 +53,7 @@ private:
     bool in_throttle_mode = false;
     RC_model_t model;
     bool throttle();
+    void addFrequency(int coreCounter);
 };
 
 
