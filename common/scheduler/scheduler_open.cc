@@ -15,6 +15,7 @@
 #include "policies/coldestCore.h"
 #include "policies/dvfsFixedPower.h"
 #include "policies/dvfsMaxFreq.h"
+#include "policies/dvfsMaxFreqHS.h"
 #include "policies/dvfsOndemand.h"
 #include "policies/dvfsTestStaticPower.h"
 #include "policies/mapFirstUnused.h"
@@ -367,6 +368,26 @@ void SchedulerOpen::initDVFSPolicy(String policyName, PELT *pelt) {
     cout << "dtm critical temperatures -> " << dtmRecoveredTemperature << "|"
          << dtmCriticalTemperature << endl;
     dvfsPolicy = new DVFSchedFreq(
+        performanceCounters, coreRows, coreColumns, maxFrequency, minFrequency,
+        dtmCriticalTemperature, dtmRecoveredTemperature, pelt);
+  } else if (policyName == "maxFreqHS") {
+    dvfsPolicy = new DVFSMaxFreqHS(performanceCounters, coreRows, coreColumns,
+                                 maxFrequency);
+  } else if (policyName == "minMaxFreqHS") {
+    cout << "min frequency" << minFrequency << endl;
+    cout << "max frequency" << maxFrequency << endl;
+    dvfsPolicy = new DVFSMinMaxFreqHS(performanceCounters, coreRows, coreColumns,
+                                    maxFrequency, minFrequency);
+  } else if (policyName == "schedFreqHS") {
+    cout << "sched-util governor called!";
+    float dtmCriticalTemperature = Sim()->getCfg()->getFloat(
+        "scheduler/open/dvfs/ondemand/dtm_critical_temperature");
+    float dtmRecoveredTemperature = Sim()->getCfg()->getFloat(
+        "scheduler/open/dvfs/ondemand/dtm_recovered_temperature");
+
+    cout << "dtm critical temperatures -> " << dtmRecoveredTemperature << "|"
+         << dtmCriticalTemperature << endl;
+    dvfsPolicy = new DVFSchedFreqHS(
         performanceCounters, coreRows, coreColumns, maxFrequency, minFrequency,
         dtmCriticalTemperature, dtmRecoveredTemperature, pelt);
   } else if (policyName == "testStaticPower") {

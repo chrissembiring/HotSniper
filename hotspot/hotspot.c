@@ -578,6 +578,15 @@ int main(int argc, char **argv)
   }
 #endif
 
+  FILE * file= fopen("model_file", "wb");
+  if (file != NULL) {
+      if (!fwrite(model, sizeof(RC_model_t), 1, file)) {
+        printf("ERROR\n");
+      }
+      fclose(file);
+  }
+
+
   /* cleanup	*/
   fclose(pin);
   if (do_transient)
