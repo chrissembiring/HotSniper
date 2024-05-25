@@ -51,6 +51,7 @@ private:
     PELT *pelt;
     bool in_throttle_mode = false;
     bool throttle();
+    void addFrequency(int coreCounter);
 };
 
 

@@ -334,10 +334,7 @@ void SchedulerOpen::initMappingPolicy(String policyName) {
         "scheduler/open/migration/coldestCore/criticalTemperature");
     mappingPolicy = new ColdestCore(performanceCounters, coreRows, coreColumns,
                                     criticalTemperature);
-  } // else if (policyName ="XYZ") {... } //Place to instantiate a new mapping
-    // logic. Implementation is put in "policies" package.
-
-  else {
+  } else {
     cout << "\n[Scheduler] [Error]: Unknown Mapping Algorithm" << endl;
     exit(1);
   }
@@ -432,9 +429,13 @@ void SchedulerOpen::initMigrationPolicy(String policyName) {
         "scheduler/open/migration/coldestCore/criticalTemperature");
     migrationPolicy = new ColdestCore(performanceCounters, coreRows,
                                       coreColumns, criticalTemperature);
-  } // else if (policyName ="XYZ") {... } //Place to instantiate a new migration
-    // logic. Implementation is put in "policies" package.
-  else {
+  } else if (policyName == "schedColdestCore") {
+    cout << "migration policy set to schedColdestCore" << endl;
+    float criticalTemperature = Sim()->getCfg()->getFloat(
+        "scheduler/open/migration/coldestCore/criticalTemperature");
+    mappingPolicy = new ColdestCore(performanceCounters, coreRows, coreColumns,
+                                    criticalTemperature - 2.5);
+  } else {
     cout << "\n[Scheduler] [Error]: Unknown Migration Algorithm" << endl;
     exit(1);
   }
@@ -1380,7 +1381,7 @@ void SchedulerOpen::executeDVFSPolicy() {
 /** executeMigrationPolicy
  * Perform migration according to the used policy.
  */
-void SchedulerOpen::executeMigrationPolicy(SubsecondTime time) {
+void SchedulerOpen::executeMigrationPolicy(SubsecondTime time, PELT * pelt) {
   std::vector<int> taskIds;
   for (int coreCounter = 0; coreCounter < numberOfCores; coreCounter++) {
     taskIds.push_back(systemCores.at(coreCounter).assignedTaskID);
@@ -1396,7 +1397,20 @@ void SchedulerOpen::executeMigrationPolicy(SubsecondTime time) {
   std::vector<migration> migrations =
       migrationPolicy->migrate(time, taskIds, activeCores);
 
+  // reset to default mapping
+  for (int i = 0; i < this->coreRows * this->coreRows; i++)
+            pelt->prev_core_mapping[i] = i; 
+
   for (migration &migration : migrations) {
+
+     pelt->prev_core_mapping[migration.toCore] = migration.fromCore;
+     pelt->prev_core_mapping[migration.fromCore] = migration.toCore;
+
+     // migrate additional frequencies as well
+     int tempFreq = pelt->addFreq[migration.fromCore];
+     pelt->addFreq[migration.fromCore] = pelt->addFreq[migration.toCore];
+     pelt->addFreq[migration.toCore] = tempFreq;
+
     if (systemCores.at(migration.fromCore).assignedTaskID == -1) {
       cout << "\n[Scheduler][Error]: Migration Policy ordered migration from "
               "unused core.\n";
@@ -1503,7 +1517,7 @@ void SchedulerOpen::periodic(SubsecondTime time) {
   if ((migrationPolicy != NULL) && (time.getNS() % migrationEpoch == 0)) {
     cout << "\n[Scheduler]: Migration invoked at " << formatTime(time) << endl;
 
-    executeMigrationPolicy(time);
+    executeMigrationPolicy(time, pelt);
   }
 
   if ((dvfsPolicy != NULL) && (time.getNS() % dvfsEpoch == 0)) {

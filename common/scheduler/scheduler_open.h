@@ -61,7 +61,7 @@ class SchedulerOpen : public SchedulerPinnedBase {
 		MigrationPolicy *migrationPolicy = NULL;
 		long migrationEpoch;
 		void initMigrationPolicy(String policyName);
-		void executeMigrationPolicy(SubsecondTime time);
+		void executeMigrationPolicy(SubsecondTime time, PELT *pelt);
 		void migrateThread(thread_id_t thread_id, core_id_t core_id);
 
 		std::string formatTime(SubsecondTime time);
