@@ -239,10 +239,10 @@ def example():
     for benchmark in (
                       'parsec-blackscholes',
                       #'parsec-bodytrack',
-                      #'parsec-canneal',
+                      'parsec-streamcluster',
+                      'parsec-canneal',
                       #'parsec-dedup',
-                      #'parsec-fluidanimate',
-                      #'parsec-streamcluster',
+                      'parsec-fluidanimate',
                       #'parsec-swaptions',
                       #'parsec-x264',
                       #'splash2-barnes',
@@ -260,13 +260,8 @@ def example():
                       #'splash2-radix',
                       ):
 
-        min_parallelism = get_feasible_parallelisms(benchmark)[0]
-        max_parallelism = get_feasible_parallelisms(benchmark)[-1]
-        for freq in (1, 2):
-            #for parallelism in (max_parallelism,):
-            for parallelism in (3, ):
-                # you can also use try_run instead
-                run(['{:.1f}GHz'.format(freq), 'maxFreq', 'slowDVFS'], get_instance(benchmark, parallelism, input_set='simsmall'))
+        run(['{:.1f}GHz'.format(3), 'schedFreq', 'fastDVFS'], get_instance(benchmark, 2, input_set='simsmall'))
+        #run(['{:.1f}GHz'.format(3), 'coldestCore', 'fastDVFS'], get_instance(benchmark, 2, input_set='simsmall'))
 
 
 def multi_program():
@@ -299,13 +294,16 @@ def test_static_power():
     run(['4.0GHz', 'testStaticPower', 'slowDVFS'], get_instance('parsec-blackscholes', 3, input_set='simsmall'))
 
 def ondemand_demo():
-    run(['{:.1f}GHz'.format(4), 'ondemand', 'fastDVFS'], get_instance('parsec-blackscholes', 3, input_set='simsmall'))
-
+    run(['{:.1f}GHz'.format(2), 'maxFreq', 'fastDVFS'], get_instance('parsec-blackscholes', 2, input_set='simsmall'))
+    run(['{:.1f}GHz'.format(2), 'maxFreq', 'fastDVFS'], get_instance('parsec-fluidanimate', 2, input_set='simsmall'))
+    run(['{:.1f}GHz'.format(2), 'maxFreq', 'fastDVFS'], get_instance('parsec-streamcluster', 2, input_set='simsmall'))
+    run(['{:.1f}GHz'.format(2), 'maxFreq', 'fastDVFS'], get_instance('parsec-canneal', 2, input_set='simsmall'))
 
 def main():
-    # example()
-    ondemand_demo()
-    #test_static_power()
+    prev_run_cleanup()
+    example()
+    # ondemand_demo()
+    # test_static_power()
     # multi_program()
 
 if __name__ == '__main__':
